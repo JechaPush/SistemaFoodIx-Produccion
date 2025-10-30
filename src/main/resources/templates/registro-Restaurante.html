@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registro de Restaurante - FoodIx</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .section-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .password-mismatch, .invalid-input {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+        }
+        .form-text {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 0 5px;
+            font-weight: bold;
+        }
+        .step.active {
+            background: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Barra de Navegación -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/" th:href="@{/}">FoodIx</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/tutorial" th:href="@{/tutorial}">Tutorial</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login" th:href="@{/login}">Iniciar Sesión</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contacto" th:href="@{/contacto}">Contacto</a>
+                </li>             
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Contenido Principal -->
+<main style="padding-top: 80px; padding-bottom: 40px; min-height: 100vh; background: linear-gradient(360deg, #FFD700 0%, #a0002a 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-9">
+                <div class="card shadow-lg mt-4">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-store fa-3x text-success mb-3"></i>
+                            <h2 class="fw-bold">Registra tu Restaurante</h2>
+                            <p class="text-muted">Únete a FoodIx y aumenta tus ventas con promociones exclusivas</p>
+                        </div>
+
+                        <!-- Indicador de pasos -->
+                        <div class="step-indicator">
+                            <div class="step active">
+                                <i class="fas fa-user"></i> Datos Personales
+                            </div>
+                            <div class="step">
+                                <i class="fas fa-store"></i> Datos del Restaurante
+                            </div>
+                            <div class="step">
+                                <i class="fas fa-check"></i> Confirmación
+                            </div>
+                        </div>
+
+                        <!-- Mensajes de notificación -->
+                        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle"></i>
+                            <span th:text="${message}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <!-- Alerta informativa -->
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Importante:</strong> Tu registro será revisado por nuestro equipo. 
+                            Recibirás una notificación cuando sea aprobado (generalmente en 24-48 horas).
+                        </div>
+
+                        <form action="/registro-restaurante" th:action="@{/registro-restaurante}" 
+                              method="post" id="registerRestauranteForm" enctype="multipart/form-data">
+                            
+                            <!-- Campo oculto para Rol (Restaurante = 3) -->
+                            <input type="hidden" name="CodigoRol" value="3">
+                            
+                            <!-- ==================== SECCIÓN 1: DATOS DEL USUARIO RESPONSABLE ==================== -->
+                            <div class="section-header">
+                                <h4 class="mb-0"><i class="fas fa-user"></i> Datos del Responsable</h4>
+                            </div>
+
+                            <!-- Nombre y Apellidos del responsable -->
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="nombre" class="form-label">Nombre del Responsable *</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                                           required maxlength="50"
+                                           pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" 
+                                           title="Solo se permiten letras y espacios">
+                                    <div class="form-text text-muted">Solo letras (máx. 50 caracteres)</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="apellidoPaterno" class="form-label">Apellido Paterno *</label>
+                                    <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" 
+                                           required maxlength="50"
+                                           pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" 
+                                           title="Solo se permiten letras y espacios">
+                                    <div class="form-text text-muted">Solo letras (máx. 50 caracteres)</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="apellidoMaterno" class="form-label">Apellido Materno *</label>
+                                    <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno" 
+                                           required maxlength="50"
+                                           pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" 
+                                           title="Solo se permiten letras y espacios">
+                                    <div class="form-text text-muted">Solo letras (máx. 50 caracteres)</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tipo y Número de Documento del responsable -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tipoDocumento" class="form-label">Tipo de Documento *</label>
+                                    <select class="form-select" id="tipoDocumento" name="tipoDocumento" required>
+                                        <option value="">Seleccionar</option>
+                                        <option value="DNI">DNI</option>
+                                        <option value="CE">Carnet de Extranjería</option>
+                                        <option value="PAS">Pasaporte</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="numeroDocumento" class="form-label">Número de Documento *</label>
+                                    <input type="text" class="form-control" id="numeroDocumento" name="numeroDocumento" 
+                                           required maxlength="15">
+                                    <div class="form-text text-muted" id="docNumberHelp">Ingrese el número de documento</div>
+                                </div>
+                            </div>
+
+                            <!-- Fecha de Nacimiento y Teléfono -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento *</label>
+                                    <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento" required>
+                                    <div class="form-text text-muted">Debes ser mayor de 18 años</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefono" class="form-label">Teléfono de Contacto *</label>
+                                    <input type="tel" class="form-control" id="telefono" name="telefono" 
+                                           required maxlength="20" pattern="[0-9]{9}" 
+                                           title="Debe contener exactamente 9 dígitos">
+                                    <div class="form-text text-muted">9 dígitos sin espacios</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Email y Contraseñas -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="correoElectronico" class="form-label">Correo Electrónico *</label>
+                                    <input type="email" class="form-control" id="correoElectronico" name="correoElectronico" 
+                                           required maxlength="50">
+                                    <div class="form-text text-muted">Usarás este correo para iniciar sesión</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="contrasena" class="form-label">Contraseña *</label>
+                                    <input type="password" class="form-control" id="contrasena" name="contrasena" 
+                                           required minlength="6" maxlength="255">
+                                    <div class="form-text text-muted">Mínimo 6 caracteres</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Confirmar Contraseña y Dirección Personal -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="confirmarContrasena" class="form-label">Confirmar Contraseña *</label>
+                                    <input type="password" class="form-control" id="confirmarContrasena" required>
+                                    <div class="form-text text-muted" id="passwordMatchText">Las contraseñas deben coincidir</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="direccionPersonal" class="form-label">Dirección Personal</label>
+                                    <input type="text" class="form-control" id="direccionPersonal" name="direccionPersonal" maxlength="100">
+                                    <div class="form-text text-muted">Opcional - Máximo 100 caracteres</div>
+                                </div>
+                            </div>
+
+                            <!-- Ubicación del responsable (Departamento, Provincia, Distrito) -->
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="codigoDepartamentoPersonal" class="form-label">Departamento *</label>
+                                    <select class="form-select" id="codigoDepartamentoPersonal" required>
+                                        <option value="">Seleccionar</option>
+                                        <option th:each="dept : ${departamentos}" 
+                                                th:value="${dept.codigo}" 
+                                                th:text="${dept.nombre}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="codigoProvinciaPersonal" class="form-label">Provincia *</label>
+                                    <select class="form-select" id="codigoProvinciaPersonal" required disabled>
+                                        <option value="">Seleccione departamento primero</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="codigoDistritoPersonal" class="form-label">Distrito *</label>
+                                    <select class="form-select" id="codigoDistritoPersonal" name="codigoDistritoPersonal" required disabled>
+                                        <option value="">Seleccione provincia primero</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <!-- ==================== SECCIÓN 2: DATOS DEL RESTAURANTE ==================== -->
+                            <div class="section-header">
+                                <h4 class="mb-0"><i class="fas fa-store"></i> Datos del Restaurante</h4>
+                            </div>
+
+                            <!-- RUC y Razón Social -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="ruc" class="form-label">RUC del Restaurante *</label>
+                                    <input type="text" class="form-control" id="ruc" name="ruc" 
+                                           required maxlength="11" pattern="[0-9]{11}" 
+                                           title="Debe contener exactamente 11 dígitos">
+                                    <div class="form-text text-muted">11 dígitos sin espacios ni guiones</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="razonSocial" class="form-label">Razón Social *</label>
+                                    <input type="text" class="form-control" id="razonSocial" name="razonSocial" 
+                                           required maxlength="150">
+                                    <div class="form-text text-muted">Nombre legal de la empresa (máx. 150 caracteres)</div>
+                                </div>
+                            </div>
+
+                            <!-- Nombre Comercial -->
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="nombreComercial" class="form-label">Nombre Comercial del Restaurante *</label>
+                                    <input type="text" class="form-control" id="nombreComercial" name="nombreComercial" 
+                                           required maxlength="100" placeholder="Ej: Restaurante El Sabor Chiclayano">
+                                    <div class="form-text text-muted">El nombre que aparecerá en la app (máx. 100 caracteres)</div>
+                                </div>
+                            </div>
+
+                            <!-- Descripción del Restaurante -->
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">Descripción del Restaurante</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" 
+                                          rows="3" maxlength="500"
+                                          placeholder="Describe brevemente tu restaurante, especialidades, etc."></textarea>
+                                <div class="form-text text-muted">Opcional - Máximo 500 caracteres</div>
+                            </div>
+
+                            <!-- Dirección del Restaurante -->
+                            <div class="mb-3">
+                                <label for="direccionNegocio" class="form-label">Dirección del Restaurante *</label>
+                                <input type="text" class="form-control" id="direccionNegocio" name="direccionNegocio" 
+                                       required maxlength="200" placeholder="Ej: Av. Balta 456, Chiclayo">
+                                <div class="form-text text-muted">Dirección física donde opera el negocio</div>
+                            </div>
+
+                            <!-- Teléfono y Email del Restaurante -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefonoNegocio" class="form-label">Teléfono del Restaurante</label>
+                                    <input type="tel" class="form-control" id="telefonoNegocio" name="telefonoNegocio" 
+                                           maxlength="20" pattern="[0-9]{9}" placeholder="999999999">
+                                    <div class="form-text text-muted">Opcional - 9 dígitos</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="correoNegocio" class="form-label">Email del Restaurante</label>
+                                    <input type="email" class="form-control" id="correoNegocio" name="correoNegocio" 
+                                           maxlength="150" placeholder="restaurante@ejemplo.com">
+                                    <div class="form-text text-muted">Opcional - Para contacto con clientes</div>
+                                </div>
+                            </div>
+
+                            <!-- Ubicación del Restaurante -->
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="codigoDepartamentoNegocio" class="form-label">Departamento del Restaurante *</label>
+                                    <select class="form-select" id="codigoDepartamentoNegocio" required>
+                                        <option value="">Seleccionar</option>
+                                        <option th:each="dept : ${departamentos}" 
+                                                th:value="${dept.codigo}" 
+                                                th:text="${dept.nombre}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="codigoProvinciaNegocio" class="form-label">Provincia *</label>
+                                    <select class="form-select" id="codigoProvinciaNegocio" required disabled>
+                                        <option value="">Seleccione departamento primero</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="codigoDistritoNegocio" class="form-label">Distrito *</label>
+                                    <select class="form-select" id="codigoDistritoNegocio" name="codigoDistritoNegocio" required disabled>
+                                        <option value="">Seleccione provincia primero</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Categorías del Restaurante -->
+                            <div class="mb-3">
+                                <label class="form-label">Categorías del Restaurante *</label>
+                                <div class="form-text text-muted mb-2">Selecciona todas las que apliquen</div>
+                                <div class="row">
+                                    <div class="col-md-3 mb-2" th:each="cat : ${categorias}">
+                                        <div class="form-check">
+                                            <input class="form-check-input categoria-check" type="checkbox" 
+                                                   name="categorias" th:value="${cat.codigo}" th:id="'cat' + ${cat.codigo}">
+                                            <label class="form-check-label" th:for="'cat' + ${cat.codigo}" th:text="${cat.nombre}">
+                                                Categoría
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="invalid-feedback" id="categoriasError" style="display: none;">
+                                    Debes seleccionar al menos una categoría
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <!-- ==================== SECCIÓN 3: DOCUMENTOS ==================== -->
+                            <div class="section-header">
+                                <h4 class="mb-0"><i class="fas fa-file-upload"></i> Documentos de Verificación</h4>
+                            </div>
+
+                            <div class="alert alert-warning" role="alert">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Los siguientes documentos son necesarios para verificar tu restaurante. 
+                                Formatos aceptados: PDF, JPG, PNG (máx. 5MB por archivo)
+                            </div>
+
+                            <!-- Subida de Documentos -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="documentoRuc" class="form-label">Copia del RUC *</label>
+                                    <input type="file" class="form-control" id="documentoRuc" name="documentoRuc" 
+                                           accept=".pdf,.jpg,.jpeg,.png" required>
+                                    <div class="form-text text-muted">Formato: PDF, JPG, PNG (máx. 5MB)</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="licenciaFuncionamiento" class="form-label">Licencia de Funcionamiento</label>
+                                    <input type="file" class="form-control" id="licenciaFuncionamiento" name="licenciaFuncionamiento" 
+                                           accept=".pdf,.jpg,.jpeg,.png">
+                                    <div class="form-text text-muted">Opcional - Formato: PDF, JPG, PNG (máx. 5MB)</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="carnetSanidad" class="form-label">Carnet de Sanidad</label>
+                                    <input type="file" class="form-control" id="carnetSanidad" name="carnetSanidad" 
+                                           accept=".pdf,.jpg,.jpeg,.png">
+                                    <div class="form-text text-muted">Opcional - Formato: PDF, JPG, PNG (máx. 5MB)</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="logo" class="form-label">Logo del Restaurante</label>
+                                    <input type="file" class="form-control" id="logo" name="logo" 
+                                           accept=".jpg,.jpeg,.png">
+                                    <div class="form-text text-muted">Opcional - JPG, PNG (máx. 2MB)</div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            
+                            <!-- Términos y Condiciones -->
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="termsRestaurante" required>
+                                <label class="form-check-label" for="termsRestaurante">
+                                    Acepto los <a href="#" class="text-decoration-none">Términos y Condiciones</a>, 
+                                    la <a href="#" class="text-decoration-none">Política de Privacidad</a> y 
+                                    confirmo que toda la información proporcionada es verídica
+                                </label>
+                            </div>
+                            
+                            <!-- Botón de Registro -->
+                            <button type="submit" class="btn btn-success btn-lg w-100 mb-3" id="submitBtn">
+                                <i class="fas fa-store"></i> Registrar mi Restaurante
+                            </button>
+                        </form>
+
+                        <div class="text-center">
+                            <p class="mb-0">¿Ya tienes cuenta? 
+                                <a href="/login" th:href="@{/login}" class="text-decoration-none">
+                                    Inicia sesión aquí
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elementos del formulario
+        const docTypeSelect = document.getElementById('tipoDocumento');
+        const docNumberInput = document.getElementById('numeroDocumento');
+        const docNumberHelp = document.getElementById('docNumberHelp');
+        const passwordInput = document.getElementById('contrasena');
+        const confirmPasswordInput = document.getElementById('confirmarContrasena');
+        const passwordMatchText = document.getElementById('passwordMatchText');
+        const rucInput = document.getElementById('ruc');
+        const phoneInput = document.getElementById('telefono');
+        const phoneRestInput = document.getElementById('telefonoNegocio');
+        
+        // Elementos de nombres
+        const nombreInput = document.getElementById('nombre');
+        const paternoInput = document.getElementById('apellidoPaterno');
+        const maternoInput = document.getElementById('apellidoMaterno');
+        
+        // Elementos de ubicación personal
+        const deptPersonal = document.getElementById('codigoDepartamentoPersonal');
+        const provPersonal = document.getElementById('codigoProvinciaPersonal');
+        const distPersonal = document.getElementById('codigoDistritoPersonal');
+        
+        // Elementos de ubicación restaurante
+        const deptRest = document.getElementById('codigoDepartamentoNegocio');
+        const provRest = document.getElementById('codigoProvinciaNegocio');
+        const distRest = document.getElementById('codigoDistritoNegocio');
+        
+        // Validación de edad mínima (18 años)
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+        document.getElementById('fechaNacimiento').max = maxDate.toISOString().split('T')[0];
+        
+        // Validación de tipo de documento y número
+        docTypeSelect.addEventListener('change', function() {
+            const selectedType = this.value;
+            
+            if (selectedType === 'DNI') {
+                docNumberInput.setAttribute('maxlength', '8');
+                docNumberInput.setAttribute('pattern', '[0-9]{8}');
+                docNumberHelp.textContent = '8 dígitos numéricos';
+            } else if (selectedType === 'CE' || selectedType === 'PAS') {
+                docNumberInput.setAttribute('maxlength', '15');
+                docNumberInput.setAttribute('pattern', '[A-Za-z0-9]{1,15}');
+                docNumberHelp.textContent = 'Máximo 15 caracteres alfanuméricos';
+            }
+            docNumberInput.value = '';
+        });
+        
+        // Validación de contraseñas
+        function validatePasswordMatch() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            if (confirmPassword === '') {
+                confirmPasswordInput.classList.remove('password-mismatch');
+                passwordMatchText.textContent = 'Las contraseñas deben coincidir';
+                passwordMatchText.className = 'form-text text-muted';
+                return;
+            }
+            
+            if (password === confirmPassword) {
+                confirmPasswordInput.classList.remove('password-mismatch');
+                passwordMatchText.textContent = '✓ Las contraseñas coinciden';
+                passwordMatchText.className = 'form-text text-success';
+            } else {
+                confirmPasswordInput.classList.add('password-mismatch');
+                passwordMatchText.textContent = '✗ Las contraseñas no coinciden';
+                passwordMatchText.className = 'form-text text-danger';
+            }
+        }
+        
+        passwordInput.addEventListener('input', validatePasswordMatch);
+        confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+        
+        // Validación de solo letras
+        function validateLettersOnly(input) {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^A-Za-záéíóúÁÉÍÓÚñÑ\s]/g, '');
+            });
+        }
+        
+        validateLettersOnly(nombreInput);
+        validateLettersOnly(paternoInput);
+        validateLettersOnly(maternoInput);
+        
+        // Validación de solo números para teléfonos
+        phoneInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+        
+        phoneRestInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+        
+        // Validación de solo números para DNI
+        docNumberInput.addEventListener('input', function() {
+            const tipoDoc = docTypeSelect.value;
+            if (tipoDoc === 'DNI') { // Solo para DNI
+                this.value = this.value.replace(/[^0-9]/g, '');
+            }
+        });
+        
+        // Validación de solo números para RUC (11 dígitos)
+        rucInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+        
+        // ==================== CARGA DINÁMICA DE UBICACIONES ====================
+        
+        // Función para cargar provincias (UBICACIÓN PERSONAL)
+        deptPersonal.addEventListener('change', function() {
+            const deptCodigo = this.value;
+            console.log('Departamento seleccionado:', deptCodigo);
+            provPersonal.innerHTML = '<option value="">Cargando...</option>';
+            provPersonal.disabled = true;
+            distPersonal.innerHTML = '<option value="">Seleccione provincia primero</option>';
+            distPersonal.disabled = true;
+            
+            if (deptCodigo) {
+                const url = `/api/provincias/${deptCodigo}`;
+                console.log('Fetching URL:', url);
+                fetch(url)
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Provincias recibidas:', data);
+                        provPersonal.innerHTML = '<option value="">Seleccionar</option>';
+                        data.forEach(provincia => {
+                            const option = document.createElement('option');
+                            option.value = provincia.codigo;
+                            option.textContent = provincia.nombre;
+                            provPersonal.appendChild(option);
+                        });
+                        provPersonal.disabled = false;
+                        console.log('Provincias cargadas correctamente');
+                    })
+                    .catch(error => {
+                        console.error('Error cargando provincias:', error);
+                        provPersonal.innerHTML = '<option value="">Error al cargar</option>';
+                    });
+            } else {
+                provPersonal.innerHTML = '<option value="">Seleccione departamento primero</option>';
+            }
+        });
+        
+        // Función para cargar distritos (UBICACIÓN PERSONAL)
+        provPersonal.addEventListener('change', function() {
+            const provCodigo = this.value;
+            distPersonal.innerHTML = '<option value="">Cargando...</option>';
+            distPersonal.disabled = true;
+            
+            if (provCodigo) {
+                fetch(`/api/distritos/${provCodigo}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        distPersonal.innerHTML = '<option value="">Seleccionar</option>';
+                        data.forEach(distrito => {
+                            const option = document.createElement('option');
+                            option.value = distrito.codigo;
+                            option.textContent = distrito.nombre;
+                            distPersonal.appendChild(option);
+                        });
+                        distPersonal.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error cargando distritos:', error);
+                        distPersonal.innerHTML = '<option value="">Error al cargar</option>';
+                    });
+            } else {
+                distPersonal.innerHTML = '<option value="">Seleccione provincia primero</option>';
+            }
+        });
+        
+        // Función para cargar provincias (UBICACIÓN RESTAURANTE)
+        deptRest.addEventListener('change', function() {
+            const deptCodigo = this.value;
+            console.log('Departamento NEGOCIO seleccionado:', deptCodigo);
+            provRest.innerHTML = '<option value="">Cargando...</option>';
+            provRest.disabled = true;
+            distRest.innerHTML = '<option value="">Seleccione provincia primero</option>';
+            distRest.disabled = true;
+            
+            if (deptCodigo) {
+                const url = `/api/provincias/${deptCodigo}`;
+                console.log('Fetching URL (Negocio):', url);
+                fetch(url)
+                    .then(response => {
+                        console.log('Response status (Negocio):', response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Provincias recibidas (Negocio):', data);
+                        provRest.innerHTML = '<option value="">Seleccionar</option>';
+                        data.forEach(provincia => {
+                            const option = document.createElement('option');
+                            option.value = provincia.codigo;
+                            option.textContent = provincia.nombre;
+                            provRest.appendChild(option);
+                        });
+                        provRest.disabled = false;
+                        console.log('Provincias cargadas correctamente (Negocio)');
+                    })
+                    .catch(error => {
+                        console.error('Error cargando provincias (Negocio):', error);
+                        provRest.innerHTML = '<option value="">Error al cargar</option>';
+                    });
+            } else {
+                provRest.innerHTML = '<option value="">Seleccione departamento primero</option>';
+            }
+        });
+        
+        // Función para cargar distritos (UBICACIÓN RESTAURANTE)
+        provRest.addEventListener('change', function() {
+            const provCodigo = this.value;
+            distRest.innerHTML = '<option value="">Cargando...</option>';
+            distRest.disabled = true;
+            
+            if (provCodigo) {
+                fetch(`/api/distritos/${provCodigo}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        distRest.innerHTML = '<option value="">Seleccionar</option>';
+                        data.forEach(distrito => {
+                            const option = document.createElement('option');
+                            option.value = distrito.codigo;
+                            option.textContent = distrito.nombre;
+                            distRest.appendChild(option);
+                        });
+                        distRest.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error cargando distritos:', error);
+                        distRest.innerHTML = '<option value="">Error al cargar</option>';
+                    });
+            } else {
+                distRest.innerHTML = '<option value="">Seleccione provincia primero</option>';
+            }
+        });
+        
+        // ==================== VALIDACIÓN DE ARCHIVOS ====================
+        const fileInputs = [
+            { input: document.getElementById('documentoRuc'), maxSize: 5 * 1024 * 1024 },
+            { input: document.getElementById('licenciaFuncionamiento'), maxSize: 5 * 1024 * 1024 },
+            { input: document.getElementById('carnetSanidad'), maxSize: 5 * 1024 * 1024 },
+            { input: document.getElementById('logo'), maxSize: 2 * 1024 * 1024 }
+        ];
+        
+        fileInputs.forEach(({input, maxSize}) => {
+            if (input) {
+                input.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        // Validar tamaño
+                        if (file.size > maxSize) {
+                            alert(`El archivo ${file.name} excede el tamaño máximo permitido (${maxSize / (1024 * 1024)}MB)`);
+                            this.value = '';
+                            return;
+                        }
+                        
+                        // Validar tipo de archivo
+                        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+                        if (!allowedTypes.includes(file.type)) {
+                            alert('Solo se permiten archivos PDF, JPG o PNG');
+                            this.value = '';
+                            return;
+                        }
+                    }
+                });
+            }
+        });
+        
+        // ==================== VALIDACIÓN DE CATEGORÍAS ====================
+        const categoriaCheckboxes = document.querySelectorAll('.categoria-check');
+        const categoriasError = document.getElementById('categoriasError');
+        
+        function validateCategorias() {
+            const checkedCount = Array.from(categoriaCheckboxes).filter(cb => cb.checked).length;
+            if (checkedCount === 0) {
+                categoriasError.style.display = 'block';
+                return false;
+            } else {
+                categoriasError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        categoriaCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', validateCategorias);
+        });
+        
+        // ==================== VALIDACIÓN DEL FORMULARIO ANTES DE ENVIAR ====================
+        const form = document.getElementById('registerRestauranteForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        form.addEventListener('submit', function(e) {
+            // Validar contraseñas
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                e.preventDefault();
+                alert('Las contraseñas no coinciden');
+                confirmPasswordInput.focus();
+                return false;
+            }
+            
+            // Validar edad (18 años mínimo)
+            const fechaNac = new Date(document.getElementById('fechaNacimiento').value);
+            const hoy = new Date();
+            const edad = Math.floor((hoy - fechaNac) / (365.25 * 24 * 60 * 60 * 1000));
+            if (edad < 18) {
+                e.preventDefault();
+                alert('El responsable debe ser mayor de 18 años');
+                return false;
+            }
+            
+            // Validar que se haya seleccionado distrito personal
+            if (!distPersonal.value) {
+                e.preventDefault();
+                alert('Por favor selecciona tu distrito personal');
+                distPersonal.focus();
+                return false;
+            }
+            
+            // Validar que se haya seleccionado distrito del restaurante
+            if (!distRest.value) {
+                e.preventDefault();
+                alert('Por favor selecciona el distrito del restaurante');
+                distRest.focus();
+                return false;
+            }
+            
+            // Validar RUC (11 dígitos)
+            if (rucInput.value.length !== 11) {
+                e.preventDefault();
+                alert('El RUC debe tener exactamente 11 dígitos');
+                rucInput.focus();
+                return false;
+            }
+            
+            // Validar categorías seleccionadas
+            if (!validateCategorias()) {
+                e.preventDefault();
+                alert('Debes seleccionar al menos una categoría para tu restaurante');
+                return false;
+            }
+            
+            // Deshabilitar botón para evitar doble envío
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando registro...';
+            
+            return true;
+        });
+        
+        // ==================== INDICADOR DE PASOS ====================
+        const steps = document.querySelectorAll('.step');
+        
+        function updateStepIndicator() {
+            const scrollPosition = window.scrollY + window.innerHeight / 2;
+            const sections = [
+                document.querySelector('.section-header'), // Datos Personales
+                document.querySelectorAll('.section-header')[1], // Datos del Restaurante
+                document.querySelectorAll('.section-header')[2]  // Documentos
+            ];
+            
+            sections.forEach((section, index) => {
+                if (section && scrollPosition >= section.offsetTop) {
+                    steps.forEach((step, stepIndex) => {
+                        if (stepIndex <= index) {
+                            step.classList.add('active');
+                        } else {
+                            step.classList.remove('active');
+                        }
+                    });
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', updateStepIndicator);
+        
+        // ==================== TOOLTIPS Y FEEDBACK VISUAL ====================
+        const requiredInputs = form.querySelectorAll('[required]');
+        
+        requiredInputs.forEach(input => {
+            if (input.type !== 'checkbox' && input.type !== 'file') {
+                input.addEventListener('blur', function() {
+                    if (this.value.trim() !== '' && this.checkValidity()) {
+                        this.classList.add('is-valid');
+                        this.classList.remove('is-invalid');
+                    } else if (this.value.trim() !== '') {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+        });
+        
+        // ==================== PREVENCIÓN DE RECARGA ACCIDENTAL ====================
+        let formModified = false;
+        
+        form.addEventListener('input', function() {
+            formModified = true;
+        });
+        
+        window.addEventListener('beforeunload', function(e) {
+            if (formModified && !form.submitted) {
+                e.preventDefault();
+                e.returnValue = 'Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?';
+                return e.returnValue;
+            }
+        });
+        
+        form.addEventListener('submit', function() {
+            form.submitted = true;
+        });
+        
+        // ==================== AUTO-GUARDADO EN LOCAL STORAGE ====================
+        const formFields = ['Nombre', 'ApellidoPaterno', 'ApellidoMaterno', 'NumeroDocumento', 
+                           'CorreoElectronico', 'Telefono', 'RUC', 'RazonSocial', 
+                           'NombreRestaurante', 'DireccionRestaurante'];
+        
+        // Cargar datos guardados
+        formFields.forEach(fieldName => {
+            const savedValue = localStorage.getItem(`restaurante_${fieldName}`);
+            const field = document.getElementById(fieldName);
+            if (savedValue && field && !field.value) {
+                field.value = savedValue;
+            }
+        });
+        
+        // Guardar datos mientras se escribe
+        formFields.forEach(fieldName => {
+            const field = document.getElementById(fieldName);
+            if (field) {
+                field.addEventListener('input', function() {
+                    localStorage.setItem(`restaurante_${fieldName}`, this.value);
+                });
+            }
+        });
+        
+        // Limpiar localStorage al enviar exitosamente
+        form.addEventListener('submit', function() {
+            if (this.checkValidity()) {
+                formFields.forEach(fieldName => {
+                    localStorage.removeItem(`restaurante_${fieldName}`);
+                });
+            }
+        });
+        
+        // ==================== CONTADOR DE CARACTERES ====================
+        const descripcionTextarea = document.getElementById('descripcion');
+        if (descripcionTextarea) {
+            const maxLength = descripcionTextarea.getAttribute('maxlength');
+            const counterDiv = document.createElement('div');
+            counterDiv.className = 'form-text text-muted text-end';
+            counterDiv.id = 'descripcionCounter';
+            descripcionTextarea.parentNode.insertBefore(counterDiv, descripcionTextarea.nextSibling);
+            
+            function updateCounter() {
+                const currentLength = descripcionTextarea.value.length;
+                counterDiv.textContent = `${currentLength}/${maxLength} caracteres`;
+                if (currentLength > maxLength * 0.9) {
+                    counterDiv.className = 'form-text text-warning text-end';
+                } else {
+                    counterDiv.className = 'form-text text-muted text-end';
+                }
+            }
+            
+            descripcionTextarea.addEventListener('input', updateCounter);
+            updateCounter();
+        }
+        
+        // ==================== VALIDACIÓN DE RUC EN TIEMPO REAL ====================
+        rucInput.addEventListener('input', function() {
+            const ruc = this.value;
+            if (ruc.length === 11) {
+                // Validación básica del RUC peruano
+                if (ruc.startsWith('10') || ruc.startsWith('20')) {
+                    this.classList.add('is-valid');
+                    this.classList.remove('is-invalid');
+                } else {
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                }
+            } else if (ruc.length > 0) {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-valid', 'is-invalid');
+            }
+        });
+        
+        console.log('✓ Formulario de registro de restaurante inicializado correctamente');
+    });
+</script>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h5>FoodIx</h5>
+                <p class="text-muted">Tu plataforma de delivery favorita</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6>Enlaces Rápidos</h6>
+                <ul class="list-unstyled">
+                    <li><a href="/" th:href="@{/}" class="text-muted text-decoration-none">Inicio</a></li>
+                    <li><a href="/login" th:href="@{/login}" class="text-muted text-decoration-none">Iniciar Sesión</a></li>
+                    <li><a href="/registro" th:href="@{/registro}" class="text-muted text-decoration-none">Registrarse</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6>Conviértete en Socio</h6>
+                <ul class="list-unstyled">
+                    <li><a href="/registro-Restaurante" th:href="@{/registro-Restaurante}" class="text-muted text-decoration-none">Registra tu Restaurante</a></li>
+                    <li><a href="/registro-Repartidor" th:href="@{/registro-Repartidor}" class="text-muted text-decoration-none">Sé Repartidor</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="bg-secondary">
+        <div class="text-center text-muted">
+            <p class="mb-0">&copy; 2025 FoodIx. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
+
+
