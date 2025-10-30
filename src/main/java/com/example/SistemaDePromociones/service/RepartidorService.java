@@ -4,7 +4,7 @@ import com.example.SistemaDePromociones.dto.RepartidorRegistroDTO;
 import com.example.SistemaDePromociones.model.DocumentoRepartidor;
 import com.example.SistemaDePromociones.model.Repartidor;
 import com.example.SistemaDePromociones.model.Usuario;
-import com.example.SistemaDePromociones.repository.RepartidorRepository;
+import com.example.SistemaDePromociones.repository.JdbcRepartidorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,7 @@ import jakarta.persistence.PersistenceContext;
 public class RepartidorService {
     
     @Autowired
-    private RepartidorRepository repartidorRepository;
+    private JdbcRepartidorRepository repartidorRepository;
     
     @Autowired
     private UsuarioService usuarioService;
@@ -42,7 +42,7 @@ public class RepartidorService {
         }
         
         // 1. Crear usuario
-        Integer codigoTipoDocumento = dto.getTipoDocumento().equals("DNI") ? 1 : 2;
+    Integer codigoTipoDocumento = "DNI".equals(dto.getTipoDocumento()) ? 1 : 2;
         Integer codigoRol = 3; // 3 = Repartidor
         
         Long codigoUsuario = usuarioService.crearUsuario(

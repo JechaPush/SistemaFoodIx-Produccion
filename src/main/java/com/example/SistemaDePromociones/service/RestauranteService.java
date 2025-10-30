@@ -46,7 +46,7 @@ public class RestauranteService {
         }
         
         // 1. Crear usuario (representante del restaurante)
-        Integer codigoTipoDocumento = dto.getTipoDocumento().equals("DNI") ? 1 : 2;
+    Integer codigoTipoDocumento = "DNI".equals(dto.getTipoDocumento()) ? 1 : 2;
         Integer codigoRol = 4; // 4 = Restaurante
         
         Long codigoUsuario = usuarioService.crearUsuario(

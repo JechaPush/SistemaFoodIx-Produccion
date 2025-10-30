@@ -175,12 +175,13 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="CodigoTipoDocumento" class="form-label">Tipo de Documento *</label>
-                                    <select class="form-select" id="CodigoTipoDocumento" name="CodigoTipoDocumento" required>
-                                        <option value="">Seleccionar</option>
-                                        <option value="1">DNI</option>
-                                        <option value="2">Carnet de Extranjería</option>
-                                        <option value="3">Pasaporte</option>
-                                    </select>
+                                        <!-- Enviar el tipo como 'tipoDocumento' para mapear con RepartidorRegistroDTO.tipoDocumento -->
+                                        <select class="form-select" id="CodigoTipoDocumento" name="tipoDocumento" required>
+                                            <option value="">Seleccionar</option>
+                                            <option value="DNI">DNI</option>
+                                            <option value="CE">Carnet de Extranjería</option>
+                                            <option value="PAS">Pasaporte</option>
+                                        </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="NumeroDocumento" class="form-label">Número de Documento *</label>
