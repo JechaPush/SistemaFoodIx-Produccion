@@ -14,7 +14,9 @@
 <!-- Barra de Navegación -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="/" th:href="@{/}">FoodIx</a>
+        <a class="navbar-brand" href="/" th:href="@{/}">
+            <i class="fas fa-utensils"></i> FoodIx
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -22,7 +24,9 @@
             <ul class="navbar-nav ms-auto">
                 <!-- Opciones para usuarios NO autenticados -->
                 <li class="nav-item" th:if="${currentUser == null}">
-                    <a class="nav-link" href="/tutorial" th:href="@{/tutorial}">Tutorial</a>
+                    <a class="nav-link" href="/tutorial" th:href="@{/tutorial}">
+                        <i class="fas fa-question-circle"></i> Tutorial
+                    </a>
                 </li>
                 <li class="nav-item" th:if="${currentUser == null}">
                     <a class="nav-link" href="/login" th:href="@{/login}">Iniciar Sesión</a>
