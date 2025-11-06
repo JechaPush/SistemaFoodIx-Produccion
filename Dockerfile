@@ -1,5 +1,5 @@
 # 1. Usamos la imagen base de Java 21 que necesitas
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk
 
 # 2. Argumento para el .jar que se creará en la carpeta 'target'
 ARG JAR_FILE=target/*.jar
