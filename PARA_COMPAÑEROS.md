@@ -4,12 +4,22 @@
 
 ### Solo necesitas 2 comandos:
 
+#### **En PowerShell:**
 ```powershell
 # 1. Obtener el backup actualizado
 git pull
 
 # 2. Actualizar tu base de datos
 .\importar_backup.ps1
+```
+
+#### **En Git Bash:**
+```bash
+# 1. Obtener el backup actualizado
+git pull
+
+# 2. Actualizar la BD
+powershell.exe -File importar_backup.ps1
 ```
 
 Escribe `S` cuando pregunte y **¡listo!** 🎉
