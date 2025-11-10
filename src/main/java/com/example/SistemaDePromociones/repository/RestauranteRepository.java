@@ -4,6 +4,7 @@ import com.example.SistemaDePromociones.model.Restaurante;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -26,4 +27,15 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
      * Verificar si existe un RUC
      */
     boolean existsByRuc(String ruc);
+    
+    /**
+     * Buscar restaurantes por estado de aprobación
+     */
+    List<Restaurante> findByCodigoEstadoAprobacion(Long codigoEstadoAprobacion);
+    
+    /**
+     * Buscar restaurantes por estado ordenados por fecha de creación
+     */
+    List<Restaurante> findByCodigoEstadoAprobacionOrderByFechaCreacionAsc(Long codigoEstadoAprobacion);
 }
+
