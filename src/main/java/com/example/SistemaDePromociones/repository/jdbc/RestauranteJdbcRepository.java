@@ -22,7 +22,7 @@ public class RestauranteJdbcRepository {
      * Verificar si existe un RUC
      */
     public boolean existsByRuc(String ruc) {
-        String sql = "SELECT COUNT(*) FROM restaurante WHERE RUC = ?";
+        String sql = "SELECT COUNT(*) FROM restaurante WHERE ruc = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, ruc);
         return count != null && count > 0;
     }
@@ -43,9 +43,9 @@ public class RestauranteJdbcRepository {
             Long codigoDistrito
     ) {
         String sql = "INSERT INTO restaurante " +
-                    "(CodigoUsuario, RUC, RazonSocial, Nombre, Descripcion, Direccion, " +
-                    "Telefono, CorreoElectronico, CodigoDistrito, CodigoEstadoAprobacion, Estado, FechaCreacion) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, NOW())";
+                    "(codigo_usuario, ruc, razon_social, nombre, descripcion, direccion, " +
+                    "telefono, correo_electronico, codigo_distrito, codigo_estado_aprobacion, estado, fecha_creacion) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 7, 1, NOW())";  // 7 = Pendiente
         
         KeyHolder keyHolder = new GeneratedKeyHolder();
         

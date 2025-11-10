@@ -25,7 +25,7 @@ public class UsuarioJdbcRepository {
      * Verificar si existe un correo electrónico
      */
     public boolean existsByCorreoElectronico(String correo) {
-        String sql = "SELECT COUNT(*) FROM usuario WHERE CorreoElectronico = ?";
+        String sql = "SELECT COUNT(*) FROM usuario WHERE correo_electronico = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, correo);
         return count != null && count > 0;
     }
@@ -34,7 +34,7 @@ public class UsuarioJdbcRepository {
      * Verificar si existe un número de documento
      */
     public boolean existsByNumeroDocumento(String numeroDoc) {
-        String sql = "SELECT COUNT(*) FROM usuario WHERE NumeroDocumento = ?";
+        String sql = "SELECT COUNT(*) FROM usuario WHERE numero_documento = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, numeroDoc);
         return count != null && count > 0;
     }
@@ -58,9 +58,9 @@ public class UsuarioJdbcRepository {
             Long codigoDistrito
     ) {
         String sql = "INSERT INTO usuario " +
-                    "(Nombre, ApellidoPaterno, ApellidoMaterno, NumeroDocumento, FechaNacimiento, " +
-                    "CorreoElectronico, Contrasena, Telefono, Direccion, CodigoTipoDocumento, " +
-                    "CodigoRol, CodigoDistrito, Estado, FechaCreacion, FechaModificacion) " +
+                    "(nombre, apellido_paterno, apellido_materno, numero_documento, fecha_nacimiento, " +
+                    "correo_electronico, contrasena, telefono, direccion, codigo_tipo_documento, " +
+                    "codigo_rol, codigo_distrito, estado, fecha_creacion, fecha_modificacion) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())";
         
         KeyHolder keyHolder = new GeneratedKeyHolder();

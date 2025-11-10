@@ -37,6 +37,9 @@ public class MiApiRucResponseDTO {
         @JsonProperty("direccion")
         private String direccion;
         
+        @JsonProperty("domicilio_fiscal")
+        private DomicilioFiscal domicilioFiscal;
+        
         @JsonProperty("ubigeo")
         private String ubigeo;
         
@@ -175,6 +178,61 @@ public class MiApiRucResponseDTO {
                     ", distrito='" + distrito + '\'' +
                     '}';
         }
+        
+        public DomicilioFiscal getDomicilioFiscal() {
+            return domicilioFiscal;
+        }
+        
+        public void setDomicilioFiscal(DomicilioFiscal domicilioFiscal) {
+            this.domicilioFiscal = domicilioFiscal;
+        }
+    }
+    
+    // Clase interna para domicilio fiscal
+    public static class DomicilioFiscal {
+        @JsonProperty("direccion")
+        private String direccion;
+        
+        @JsonProperty("distrito")
+        private String distrito;
+        
+        @JsonProperty("provincia")
+        private String provincia;
+        
+        @JsonProperty("departamento")
+        private String departamento;
+        
+        public String getDireccion() {
+            return direccion;
+        }
+        
+        public void setDireccion(String direccion) {
+            this.direccion = direccion;
+        }
+        
+        public String getDistrito() {
+            return distrito;
+        }
+        
+        public void setDistrito(String distrito) {
+            this.distrito = distrito;
+        }
+        
+        public String getProvincia() {
+            return provincia;
+        }
+        
+        public void setProvincia(String provincia) {
+            this.provincia = provincia;
+        }
+        
+        public String getDepartamento() {
+            return departamento;
+        }
+        
+        public void setDepartamento(String departamento) {
+            this.departamento = departamento;
+        }
     }
     
     // Constructor vacío
@@ -211,11 +269,21 @@ public class MiApiRucResponseDTO {
         response.setNombreComercial(datos.getNombreComercial());
         response.setEstado(datos.getEstado());
         response.setCondicion(datos.getCondicion());
-        response.setDireccion(datos.getDireccion());
+        
+        // Priorizar domicilio_fiscal sobre direccion simple
+        if (datos.getDomicilioFiscal() != null) {
+            response.setDireccion(datos.getDomicilioFiscal().getDireccion());
+            response.setDistrito(datos.getDomicilioFiscal().getDistrito());
+            response.setProvincia(datos.getDomicilioFiscal().getProvincia());
+            response.setDepartamento(datos.getDomicilioFiscal().getDepartamento());
+        } else {
+            response.setDireccion(datos.getDireccion());
+            response.setDistrito(datos.getDistrito());
+            response.setProvincia(datos.getProvincia());
+            response.setDepartamento(datos.getDepartamento());
+        }
+        
         response.setUbigeo(datos.getUbigeo());
-        response.setDepartamento(datos.getDepartamento());
-        response.setProvincia(datos.getProvincia());
-        response.setDistrito(datos.getDistrito());
         return response;
     }
     
