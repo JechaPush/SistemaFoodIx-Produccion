@@ -10,13 +10,16 @@
 Write-Host "Actualizando base de datos..." -ForegroundColor Cyan
 Write-Host ""
 
-# Verificar que Docker este corriendo
-$dockerRunning = docker ps 2>&1 | Select-String "sistemafoodix-db-1"
-if (-not $dockerRunning) {
-    Write-Host "ERROR: Docker no esta corriendo" -ForegroundColor Red
+# Verificar que Docker este corriendo y encontrar el contenedor de MySQL
+$mysqlContainer = docker ps --filter "ancestor=mysql:8.0" --format "{{.Names}}" 2>&1 | Select-Object -First 1
+if (-not $mysqlContainer) {
+    Write-Host "ERROR: Docker no esta corriendo o no se encuentra el contenedor MySQL" -ForegroundColor Red
     Write-Host "Ejecuta: docker-compose up -d" -ForegroundColor Yellow
+    Write-Host "Luego espera 15 segundos e intenta de nuevo" -ForegroundColor Yellow
     exit 1
 }
+
+Write-Host "Contenedor MySQL encontrado: $mysqlContainer" -ForegroundColor Green
 
 # Verificar que exista el archivo de backup
 if (-not (Test-Path "backup_db_foodix.sql")) {
@@ -41,15 +44,15 @@ Write-Host ""
 Write-Host "Importando cambios..." -ForegroundColor Cyan
 
 # Importar el backup
-Get-Content "backup_db_foodix.sql" | docker exec -i sistemafoodix-db-1 mysql -u root -proot db_foodix 2>$null
+Get-Content "backup_db_foodix.sql" | docker exec -i $mysqlContainer mysql -u root -proot db_foodix 2>$null
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "OK: Base de datos actualizada" -ForegroundColor Green
     Write-Host ""
     
     # Verificar datos
-    $usuarios = docker exec -i sistemafoodix-db-1 mysql -u root -proot db_foodix -e "SELECT COUNT(*) FROM usuario;" 2>$null | Select-Object -Last 1
-    $restaurantes = docker exec -i sistemafoodix-db-1 mysql -u root -proot db_foodix -e "SELECT COUNT(*) FROM restaurante;" 2>$null | Select-Object -Last 1
+    $usuarios = docker exec -i $mysqlContainer mysql -u root -proot db_foodix -e "SELECT COUNT(*) FROM usuario;" 2>$null | Select-Object -Last 1
+    $restaurantes = docker exec -i $mysqlContainer mysql -u root -proot db_foodix -e "SELECT COUNT(*) FROM restaurante;" 2>$null | Select-Object -Last 1
     
     Write-Host "Usuarios: $usuarios | Restaurantes: $restaurantes" -ForegroundColor Cyan
     Write-Host ""
