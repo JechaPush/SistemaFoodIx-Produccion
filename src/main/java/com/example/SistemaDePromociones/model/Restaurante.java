@@ -5,75 +5,75 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * Entidad Restaurante - Representa la tabla Restaurante en la base de datos
+ * Entidad Restaurante - Representa la tabla restaurante en la base de datos
  * Almacena información de los restaurantes registrados en la plataforma
  */
 @Entity
-@Table(name = "Restaurante")
+@Table(name = "restaurante")
 @Data
 public class Restaurante {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Codigo")
+    @Column(name = "codigo")
     private Long codigo;
     
-    @Column(name = "CodigoUsuario", nullable = false)
+    @Column(name = "codigo_usuario", nullable = false)
     private Long codigoUsuario;
     
-    @Column(name = "RUC", nullable = false, unique = true, length = 15)
+    @Column(name = "ruc", nullable = false, unique = true, length = 15)
     private String ruc;
     
-    @Column(name = "RazonSocial", nullable = false, length = 150)
+    @Column(name = "razon_social", nullable = false, length = 150)
     private String razonSocial;
     
-    @Column(name = "Nombre", nullable = false, length = 100)
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
     
-    @Column(name = "Descripcion", columnDefinition = "TEXT")
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
     
-    @Column(name = "Direccion", length = 200)
+    @Column(name = "direccion", length = 200)
     private String direccion;
     
-    @Column(name = "Telefono", length = 20)
+    @Column(name = "telefono", length = 20)
     private String telefono;
     
-    @Column(name = "CorreoElectronico", length = 150)
+    @Column(name = "correo_electronico", length = 150)
     private String correoElectronico;
     
-    @Column(name = "CodigoDistrito", nullable = false)
+    @Column(name = "codigo_distrito", nullable = false)
     private Long codigoDistrito;
     
-    @Column(name = "CodigoEstadoAprobacion", nullable = false)
-    private Long codigoEstadoAprobacion = 1L; // 1 = Pendiente, 2 = Aprobado, 3 = Rechazado
+    @Column(name = "codigo_estado_aprobacion", nullable = false)
+    private Long codigoEstadoAprobacion = 7L; // 7 = Pendiente, 8 = Aprobado, 9 = Rechazado
     
-    @Column(name = "FechaAprobacion")
+    @Column(name = "fecha_aprobacion")
     private LocalDateTime fechaAprobacion;
     
-    @Column(name = "CodigoAprobador")
+    @Column(name = "codigo_aprobador")
     private Long codigoAprobador;
     
-    @Column(name = "MotivoRechazo", columnDefinition = "TEXT")
+    @Column(name = "motivo_rechazo", columnDefinition = "TEXT")
     private String motivoRechazo;
     
-    @Column(name = "FechaCreacion", nullable = false, updatable = false)
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
     
-    @Column(name = "Estado", nullable = false)
+    @Column(name = "estado", nullable = false)
     private Boolean estado = true;
     
     // Relaciones (opcional)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CodigoUsuario", insertable = false, updatable = false)
+    @JoinColumn(name = "codigo_usuario", insertable = false, updatable = false)
     private Usuario usuario;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CodigoDistrito", insertable = false, updatable = false)
+    @JoinColumn(name = "codigo_distrito", insertable = false, updatable = false)
     private Distrito distrito;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CodigoEstadoAprobacion", insertable = false, updatable = false)
+    @JoinColumn(name = "codigo_estado_aprobacion", insertable = false, updatable = false)
     private EstadoAprobacion estadoAprobacion;
     
     @PrePersist
@@ -83,7 +83,7 @@ public class Restaurante {
             estado = true;
         }
         if (codigoEstadoAprobacion == null) {
-            codigoEstadoAprobacion = 1L; // Pendiente
+            codigoEstadoAprobacion = 7L; // Pendiente
         }
     }
 }
